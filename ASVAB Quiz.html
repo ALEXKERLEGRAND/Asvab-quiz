@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#11253a" />
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <title>ASVAB Quiz</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --ink:#172432; --muted:#5f6a73; --paper:#f4f5f1; --surface:#ffffff;
+      --navy:#11253a; --navy-2:#1d3e59; --line:#d6d9d6; --accent:#f06b32;
+      --accent-soft:#fff0e8; --good:#19704a; --good-soft:#e8f5ee; --bad:#ae3f33;
+      --bad-soft:#fff0ed; --focus:#2f73c8; --shadow:0 16px 40px rgba(13,31,47,.12);
+      --radius:14px;
+    }
+    @media (prefers-color-scheme:dark){
+      :root{--ink:#eef2f4;--muted:#aab5bd;--paper:#0c1823;--surface:#142535;--navy:#07121c;--navy-2:#203c53;--line:#354856;--accent:#ff8250;--accent-soft:#3c291f;--good:#67c99a;--good-soft:#173a2d;--bad:#ff998c;--bad-soft:#402421;--focus:#74aef2;--shadow:0 18px 46px rgba(0,0,0,.32)}
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",sans-serif;line-height:1.5}
+    button{font:inherit}
+    button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+    .wrap{width:min(1100px,calc(100% - 36px));margin-inline:auto}
+    .hero{background:var(--navy);color:#f7fbfd;padding:clamp(34px,6vw,72px) 0 56px;position:relative;overflow:hidden}
+    .hero:after{content:"";position:absolute;right:-80px;bottom:-160px;width:440px;height:440px;border:78px solid rgba(240,107,50,.13);border-radius:50%}
+    .hero-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr);gap:54px;align-items:end;position:relative;z-index:1}
+    .kicker{display:flex;align-items:center;gap:10px;font-size:.82rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#ffb08e;margin:0 0 13px}
+    .kicker:before{content:"";width:28px;height:3px;background:var(--accent)}
+    h1,h2,h3{font-family:"Source Serif 4",serif;margin:0;line-height:1.06}
+    h1{font-size:clamp(2.55rem,6vw,5.25rem);max-width:760px;letter-spacing:-.035em}
+    .hero-copy{font-size:clamp(1rem,2vw,1.2rem);color:#c9d6de;max-width:640px;margin:22px 0 28px}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:12px}
+    .btn{appearance:none;border:0;border-radius:9px;padding:13px 18px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:9px;transition:background .18s,transform .18s,color .18s;min-height:48px}
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-primary:hover{background:#d95b28}
+    .btn-secondary{background:transparent;color:#fff;border:1px solid #587086}
+    .btn-secondary:hover{background:#20384d}
+    .btn:disabled{cursor:not-allowed;opacity:.58;transform:none}
+    .price-block{border-left:1px solid #4c6478;padding-left:28px}
+    .price-label{color:#9db0bd;font-size:.84rem;font-weight:600}
+    .price{font:700 clamp(2.6rem,5vw,4.4rem)/1 "Source Serif 4",serif;margin:5px 0 6px}
+    .price-note{color:#c9d6de;font-size:.92rem;margin:0}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-bottom:1px solid var(--line)}
+    .stat{padding:20px 24px;border-right:1px solid var(--line)}
+    .stat:last-child{border-right:0}
+    .stat strong{display:block;font:700 1.45rem/1.1 "Source Serif 4",serif}
+    .stat span{font-size:.78rem;color:var(--muted)}
+    main{padding:52px 0 78px}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:22px}
+    .section-head h2{font-size:clamp(1.9rem,4vw,3rem);letter-spacing:-.02em}
+    .section-head p{color:var(--muted);margin:0;max-width:520px}
+    .category-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .category{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:20px;min-height:142px;position:relative}
+    .category .num{font-size:.75rem;font-weight:700;color:var(--accent);margin-bottom:18px}
+    .category h3{font-size:1.16rem;margin-bottom:7px}
+    .category p{font-size:.88rem;color:var(--muted);margin:0}
+    .category .lock{position:absolute;right:16px;top:16px;color:var(--muted);font-size:.75rem;border:1px solid var(--line);border-radius:100px;padding:3px 7px}
+    .practice{margin-top:58px;display:grid;grid-template-columns:310px minmax(0,1fr);gap:28px;align-items:start}
+    .practice-info{position:sticky;top:20px}
+    .practice-info h2{font-size:2.35rem;margin-bottom:14px}
+    .practice-info p{color:var(--muted)}
+    .mini-list{list-style:none;margin:24px 0 0;padding:0;border-top:1px solid var(--line)}
+    .mini-list li{display:flex;gap:11px;padding:12px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+    .tick{color:var(--good);font-weight:700}
+    .quiz-shell{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;min-height:510px}
+    .quiz-top{background:var(--navy-2);color:#f5f9fb;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .quiz-top small{color:#bfd0dc;display:block;font-size:.73rem}
+    .progress-track{height:5px;background:rgba(255,255,255,.18);width:160px;border-radius:10px;overflow:hidden}
+    .progress-fill{height:100%;width:0;background:var(--accent);transition:width .25s}
+    .quiz-body{padding:clamp(22px,5vw,38px)}
+    .welcome h3{font-size:clamp(1.6rem,3vw,2.25rem);margin-bottom:12px}
+    .welcome p{color:var(--muted);max-width:600px}
+    .sample-callout{background:var(--accent-soft);border-radius:9px;padding:14px 16px;margin:22px 0;color:var(--ink);font-size:.9rem}
+    .setup-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0}
+    .setup-control{display:grid;gap:6px;font-size:.82rem;font-weight:700;color:var(--muted)}
+    .setup-control select{width:100%;min-height:46px;border:1px solid var(--line);border-radius:8px;padding:9px 36px 9px 11px;background:var(--surface);color:var(--ink);font:500 .95rem "IBM Plex Sans",sans-serif}
+    .question-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+    .pill{font-size:.76rem;font-weight:700;background:var(--accent-soft);color:var(--accent);padding:5px 9px;border-radius:100px}
+    .question{font:600 clamp(1.25rem,2.8vw,1.7rem)/1.35 "Source Serif 4",serif;margin:0 0 23px}
+    .answers{display:grid;gap:10px}
+    .answer{width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:9px;padding:14px 15px;cursor:pointer;display:flex;gap:12px;align-items:flex-start}
+    .answer:hover:not(:disabled){border-color:var(--focus);background:color-mix(in srgb,var(--surface) 93%,var(--focus))}
+    .answer .letter{font-weight:700;color:var(--muted);width:22px;flex:none}
+    .answer.correct{border-color:var(--good);background:var(--good-soft)}
+    .answer.wrong{border-color:var(--bad);background:var(--bad-soft)}
+    .answer:disabled{cursor:default;color:var(--ink)}
+    .feedback{margin-top:18px;padding:16px 17px;border-radius:9px;display:none}
+    .feedback.show{display:block}
+    .feedback.good{background:var(--good-soft)}
+    .feedback.bad{background:var(--bad-soft)}
+    .feedback strong{display:block;margin-bottom:4px}
+    .feedback p{margin:0;font-size:.93rem}
+    .quiz-actions{display:flex;justify-content:flex-end;margin-top:19px}
+    .results{text-align:center;padding:12px 0}
+    .score-ring{width:144px;height:144px;margin:8px auto 22px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--accent) var(--score),var(--line) 0);position:relative}
+    .score-ring:after{content:"";position:absolute;inset:13px;background:var(--surface);border-radius:50%}
+    .score-ring span{position:relative;z-index:1;font:700 2rem "Source Serif 4",serif}
+    .results h3{font-size:2rem}
+    .results p{color:var(--muted)}
+    .review-list{text-align:left;margin:24px 0;display:grid;gap:9px}
+    .review-item{border:1px solid var(--line);padding:12px;border-radius:8px;font-size:.88rem}
+    .review-item strong{color:var(--good)}
+    .unlock{margin-top:58px;background:var(--surface);border:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center;padding:clamp(24px,5vw,44px);border-radius:12px}
+    .unlock h2{font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:10px}
+    .unlock p{margin:0;color:var(--muted);max-width:650px}
+    .unlock-cta{text-align:center;min-width:190px}
+    .unlock-cta .btn{width:100%;margin-top:8px}
+    .unlock-cta small{display:block;color:var(--muted);margin-top:8px}
+    footer{border-top:1px solid var(--line);padding:24px 0 38px;color:var(--muted);font-size:.78rem}
+    .notice{position:fixed;inset:0;background:rgba(3,12,20,.72);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
+    .notice.open{display:flex}
+    .notice-card{background:var(--surface);color:var(--ink);width:min(480px,100%);border-radius:13px;padding:28px;box-shadow:var(--shadow)}
+    .notice-card h2{font-size:1.8rem;margin-bottom:10px}
+    .notice-card p{color:var(--muted)}
+    .notice-card .btn{width:100%;margin-top:8px;background:var(--navy-2);color:#fff}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    [hidden]{display:none!important}
+    @media(max-width:780px){
+      .wrap{width:min(100% - 24px,680px)}
+      .hero{padding:34px 0 40px}.hero-grid{grid-template-columns:1fr;gap:30px}.price-block{border-left:0;border-top:1px solid #4c6478;padding:22px 0 0}
+      .stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--line)}
+      .section-head{display:block}.section-head p{margin-top:10px}.category-grid{grid-template-columns:1fr 1fr}
+      .practice{grid-template-columns:1fr;margin-top:44px}.practice-info{position:static}.quiz-shell{min-height:0}
+      .unlock{grid-template-columns:1fr}.unlock-cta{text-align:left}.unlock-cta .btn{width:auto}
+    }
+    @media(max-width:490px){
+      h1{font-size:2.72rem}.hero-actions{display:grid}.btn{width:100%}.category-grid{grid-template-columns:1fr}.category{min-height:116px}
+      .quiz-top{align-items:flex-start}.progress-track{width:96px}.quiz-body{padding:20px 16px}.question-meta{align-items:flex-start}.answer{padding:13px 12px}.setup-controls{grid-template-columns:1fr}
+      .stat{padding:16px}.stat strong{font-size:1.25rem}.stat span{font-size:.72rem}.unlock-cta .btn{width:100%}
+    }
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="kicker">ASVAB practice that teaches</p>
+        <h1>Train the question. Learn the reason.</h1>
+        <p class="hero-copy">Build confidence across all nine ASVAB subject areas with immediate scoring and a clear explanation after every answer.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="heroStart">Start full practice</button>
+          <a class="btn btn-secondary" href="#subjectsTitle">Browse all subjects</a>
+        </div>
+      </div>
+      <div class="price-block" aria-label="Access status">
+        <div class="price-label">FULL VERSION</div>
+        <div class="price">Unlocked</div>
+        <p class="price-note">All subjects. A growing practice bank. Detailed feedback.</p>
+      </div>
+    </div>
+  </header>
+
+  <section class="stats" aria-label="Quiz details">
+    <div class="stat"><strong>Growing</strong><span>practice question bank</span></div>
+    <div class="stat"><strong>9</strong><span>ASVAB subject areas</span></div>
+    <div class="stat"><strong>Instant</strong><span>right or wrong feedback</span></div>
+    <div class="stat"><strong>Every answer</strong><span>includes an explanation</span></div>
+  </section>
+
+  <main>
+    <div class="wrap">
+      <section aria-labelledby="subjectsTitle">
+        <div class="section-head">
+          <h2 id="subjectsTitle">Every subject, covered.</h2>
+          <p>Practice across all nine areas with fresh generated variations and detailed feedback. Questions are independent practice material, not official ASVAB items.</p>
+        </div>
+        <div class="category-grid" id="categoryGrid"></div>
+      </section>
+
+      <section class="practice" id="practice" aria-labelledby="practiceTitle">
+        <div class="practice-info">
+          <h2 id="practiceTitle">Build your practice set.</h2>
+          <p>Choose a subject and session length. Every answer shows the result and reasoning immediately—before you move on.</p>
+          <ul class="mini-list">
+            <li><span class="tick">✓</span><span>Questions from all nine subject areas</span></li>
+            <li><span class="tick">✓</span><span>Answer explanations in plain language</span></li>
+            <li><span class="tick">✓</span><span>Score and answer review at the end</span></li>
+          </ul>
+        </div>
+
+        <div class="quiz-shell" aria-live="polite">
+          <div class="quiz-top">
+            <div><small>FULL PRACTICE</small><strong id="quizCounter">Ready to begin</strong></div>
+            <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+          </div>
+          <div class="quiz-body">
+            <div class="welcome" id="welcome">
+              <h3>Choose your focus. Start practicing.</h3>
+              <p>Use the current practice engine across all nine subjects, with an explanation after every answer.</p>
+              <div class="setup-controls">
+                <label class="setup-control">Subject
+                  <select id="subjectSelect" aria-label="Choose a subject">
+                    <option value="mixed">Mixed — all nine subjects</option>
+                  </select>
+                </label>
+                <label class="setup-control">Session length
+                  <select id="lengthSelect" aria-label="Choose a session length">
+                    <option value="10">10 questions</option>
+                    <option value="25">25 questions</option>
+                    <option value="50">50 questions</option>
+                  </select>
+                </label>
+              </div>
+              <div class="sample-callout"><strong>Full access is open.</strong> Pick any subject, take longer sessions, and try a new variation each time.</div>
+              <button class="btn btn-primary" id="startQuiz">Start practice</button>
+            </div>
+
+            <div id="questionView" hidden>
+              <div class="question-meta"><span class="pill" id="questionCategory"></span><span id="scoreText">Score: 0</span></div>
+              <p class="question" id="questionText"></p>
+              <div class="answers" id="answers"></div>
+              <div class="feedback" id="feedback" role="status"></div>
+              <div class="quiz-actions"><button class="btn btn-primary" id="nextQuestion" hidden>Next question</button></div>
+            </div>
+
+            <div class="results" id="results" hidden>
+              <div class="score-ring" id="scoreRing"><span id="finalScore">0/10</span></div>
+              <h3 id="resultTitle">Practice complete</h3>
+              <p id="resultCopy"></p>
+              <div class="review-list" id="reviewList"></div>
+              <button class="btn btn-primary" id="retryQuiz">Try another set</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="unlock" aria-labelledby="unlockTitle">
+        <div>
+          <h2 id="unlockTitle">The entire current practice bank is open.</h2>
+          <p>Choose any subject, take longer sessions, and review a detailed explanation after every answer. New material can be added as the bank expands.</p>
+        </div>
+        <div class="unlock-cta">
+          <strong>All nine subjects included</strong>
+          <button class="btn btn-primary" id="bottomStart">Start a practice set</button>
+          <small>No checkout inside the quiz</small>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer><div class="wrap">Independent ASVAB preparation. Not affiliated with or endorsed by the U.S. Department of Defense.</div></footer>
+
+
+  <script>
+    (function(){
+      "use strict";
+      var categories = [
+        ["Arithmetic Reasoning","Word problems, ratios, rates and percentages"],
+        ["Mathematics Knowledge","Algebra, geometry and number operations"],
+        ["Word Knowledge","Vocabulary, synonyms and meaning in context"],
+        ["Paragraph Comprehension","Main ideas, details and inferences"],
+        ["General Science","Life, earth, physical and space science"],
+        ["Electronics Information","Circuits, current, voltage and components"],
+        ["Mechanical Comprehension","Force, motion, machines and pressure"],
+        ["Auto & Shop Information","Tools, engines, maintenance and safety"],
+        ["Assembling Objects","Spatial relationships and mental rotation"]
+      ];
+      var grid = document.getElementById("categoryGrid");
+      categories.forEach(function(c,i){
+        var card=document.createElement("article"); card.className="category";
+        card.innerHTML='<span class="lock">Open</span><div class="num">0'+(i+1)+'</div><h3>'+c[0]+'</h3><p>'+c[1]+'</p>';
+        grid.appendChild(card);
+      });
+      var subjectSelect=document.getElementById("subjectSelect");
+      categories.forEach(function(c,i){var option=document.createElement("option");option.value=String(i);option.textContent=c[0];subjectSelect.appendChild(option)});
+
+      function seeded(n){ var x=Math.sin(n*999.91)*43758.5453; return x-Math.floor(x); }
+      function shuffle(item,seed){
+        var opts=item.options.map(function(v,i){return {v:v,correct:i===item.correct}});
+        for(var i=opts.length-1;i>0;i--){var j=Math.floor(seeded(seed+i)* (i+1));var t=opts[i];opts[i]=opts[j];opts[j]=t;}
+        item.options=opts.map(function(o){return o.v}); item.correct=opts.findIndex(function(o){return o.correct}); return item;
+      }
+      function money(n){return "$"+n.toFixed(2)}
+
+      var vocab=[
+        ["abundant","plentiful",["scarce","hidden","uncertain"]],["concise","brief",["wordy","ancient","careless"]],["diligent","hardworking",["lazy","confused","silent"]],
+        ["elated","overjoyed",["angry","tired","worried"]],["frugal","economical",["wasteful","fragile","generous"]],["hostile","unfriendly",["helpful","calm","honest"]],
+        ["impartial","fair",["biased","uncertain","strict"]],["novice","beginner",["expert","leader","critic"]],["obsolete","outdated",["modern","useful","expensive"]],
+        ["peril","danger",["shelter","reward","journey"]],["reluctant","unwilling",["eager","prepared","capable"]],["vital","essential",["optional","ordinary","distant"]]
+      ];
+      var science=[
+        ["Which organ pumps blood through the human body?","Heart",["Liver","Lung","Kidney"],"The heart contracts to move blood through arteries, capillaries, and veins."],
+        ["What process allows green plants to make food using light?","Photosynthesis",["Respiration","Fermentation","Digestion"],"Photosynthesis uses light energy, water, and carbon dioxide to produce sugars and oxygen."],
+        ["Which state of matter has a definite volume but takes the shape of its container?","Liquid",["Solid","Gas","Plasma"],"A liquid keeps its volume but flows to match the shape of its container."],
+        ["What force keeps planets in orbit around the Sun?","Gravity",["Magnetism","Friction","Buoyancy"],"Gravity attracts masses and supplies the inward force that bends a planet's motion into an orbit."],
+        ["Which cell structure contains most genetic material?","Nucleus",["Cell wall","Vacuole","Ribosome"],"In eukaryotic cells, DNA is stored mainly in the nucleus."],
+        ["A substance with a pH below 7 is generally what?","Acidic",["Basic","Neutral","Metallic"],"On the common pH scale, values below 7 are acidic and values above 7 are basic."],
+        ["Which gas makes up most of Earth's atmosphere?","Nitrogen",["Oxygen","Carbon dioxide","Hydrogen"],"Nitrogen makes up about 78 percent of Earth's atmosphere."],
+        ["What is the basic unit of heredity?","Gene",["Tissue","Organ","Enzyme"],"A gene is a segment of DNA that carries hereditary information."],
+        ["Which type of rock forms when magma or lava cools?","Igneous",["Sedimentary","Metamorphic","Fossilized"],"Igneous rock forms through the cooling and solidification of molten rock."],
+        ["Sound travels fastest through which general kind of material?","Solids",["Liquids","Gases","Vacuum"],"Particles are packed closely in solids, so vibrations transfer rapidly. Sound cannot travel through a vacuum."],
+        ["Which blood cells primarily carry oxygen?","Red blood cells",["White blood cells","Platelets","Nerve cells"],"Hemoglobin in red blood cells binds and transports oxygen."],
+        ["What is the change from liquid water to water vapor called?","Evaporation",["Condensation","Freezing","Precipitation"],"Evaporation occurs when molecules at a liquid's surface gain enough energy to enter the gas phase."]
+      ];
+      var electronics=[
+        ["In a simple circuit, what quantity is measured in ohms?","Resistance",["Current","Voltage","Power"],"Resistance opposes current flow and is measured in ohms (Ω)."],
+        ["Which device is designed to open a circuit when current becomes unsafe?","Fuse",["Resistor","Capacitor","Transformer"],"A fuse melts when current exceeds its rating, opening the circuit to reduce damage or fire risk."],
+        ["What is the unit of electric current?","Ampere",["Volt","Ohm","Watt"],"Current is the rate of electric charge flow and is measured in amperes, or amps."],
+        ["Two 6-volt batteries connected in series ideally provide what total voltage?","12 volts",["3 volts","6 volts","36 volts"],"Series battery voltages add: 6 V + 6 V = 12 V."],
+        ["Which component stores electric charge in an electric field?","Capacitor",["Diode","Fuse","Switch"],"A capacitor stores separated charge and energy in the electric field between its conductors."],
+        ["A diode normally allows current to flow in how many directions?","One",["Zero","Two","Four"],"An ordinary diode conducts mainly in one direction and blocks current in the reverse direction."],
+        ["Electrical power is measured in what unit?","Watt",["Ampere","Ohm","Coulomb"],"The watt is the unit of power, or energy transferred per second."],
+        ["What instrument measures voltage between two points?","Voltmeter",["Ammeter","Hydrometer","Tachometer"],"A voltmeter is connected across two points to measure electric potential difference."],
+        ["In a parallel circuit, each branch has the same what?","Voltage",["Current","Resistance","Power"],"Every parallel branch connects across the same two nodes, so each has the same voltage."],
+        ["Which material is generally a good electrical conductor?","Copper",["Rubber","Glass","Dry wood"],"Copper has mobile electrons and low resistance, making it a common conductor."],
+        ["What does AC stand for?","Alternating current",["Active charge","Added capacitance","Automatic circuit"],"Alternating current periodically reverses direction."],
+        ["A transformer operates primarily with which type of current?","Alternating current",["Direct current only","Static charge","No current"],"A changing current creates the changing magnetic field a transformer needs to induce voltage."]
+      ];
+      var mechanical=[
+        ["A longer wrench makes a tight bolt easier to turn because it increases what?","Torque",["Mass","Friction","Density"],"Torque equals force multiplied by perpendicular distance from the pivot. A longer handle increases that distance."],
+        ["On an ideal lever, moving the effort farther from the fulcrum does what?","Reduces the force needed",["Increases the force needed","Eliminates movement","Changes mass"],"A longer effort arm provides greater mechanical advantage, so less force is needed."],
+        ["If the same force acts on a smaller area, pressure does what?","Increases",["Decreases","Stays equal","Becomes zero"],"Pressure equals force divided by area. With the same force and less area, pressure increases."],
+        ["A fixed pulley mainly changes what?","Direction of force",["Amount of work","Object mass","Rope length"],"An ideal single fixed pulley changes the direction you pull but provides no force advantage."],
+        ["Meshed gears rotate in what relative directions?","Opposite directions",["The same direction","Random directions","No direction"],"When one gear tooth pushes another, the driven gear turns opposite the driving gear."],
+        ["Lubrication between moving parts primarily reduces what?","Friction",["Gravity","Inertia","Pressure"],"Lubricant separates surfaces and lowers resistance caused by rubbing."],
+        ["A ramp is an example of which simple machine?","Inclined plane",["Wheel and axle","Pulley","Wedge"],"An inclined plane trades a longer travel distance for less force needed to raise a load."],
+        ["Why does a wide base improve an object's stability?","It makes tipping require a larger shift",["It removes gravity","It reduces mass","It increases speed"],"A wider support base lets the center of gravity move farther before passing outside the base and causing a tip."],
+        ["Hydraulic systems transfer force using what?","Pressurized fluid",["Compressed springs","Electric charge","Dry gears only"],"Nearly incompressible fluid carries pressure through a closed hydraulic system."],
+        ["If speed doubles while time stays equal, distance does what?","Doubles",["Halves","Stays equal","Quadruples"],"Distance equals speed multiplied by time, so doubling speed doubles distance when time is unchanged."],
+        ["Which has more inertia: a loaded truck or an empty cart?","Loaded truck",["Empty cart","They are equal","It depends only on speed"],"Inertia increases with mass. The loaded truck has more mass and resists changes in motion more strongly."],
+        ["Springs store energy primarily as what?","Elastic potential energy",["Nuclear energy","Sound energy","Chemical energy"],"Compressing or stretching a spring stores elastic potential energy."]
+      ];
+      var auto=[
+        ["What tool is best for tightening a fastener to a specified value?","Torque wrench",["Ball-peen hammer","Hacksaw","Pry bar"],"A torque wrench indicates when a specified turning force has been applied."],
+        ["Engine oil primarily helps by doing what?","Lubricating moving parts",["Inflating tires","Charging the battery","Cooling the cabin"],"Oil forms a film between moving engine surfaces, reducing friction and wear."],
+        ["A vehicle battery supplies what type of current?","Direct current",["Alternating current","Static current","Hydraulic current"],"Automotive batteries provide direct current with fixed polarity."],
+        ["What safety item should be worn when grinding metal?","Safety glasses",["Loose gloves only","Open-toed shoes","Earbuds"],"Safety glasses protect the eyes from sparks and flying fragments."],
+        ["Low tire pressure commonly causes what?","More rolling resistance",["Less tire flex","Higher fuel economy","No tread contact"],"An underinflated tire flexes more, increasing rolling resistance and usually reducing fuel economy."],
+        ["What part ignites the air-fuel mixture in a gasoline engine?","Spark plug",["Oil filter","Radiator","Muffler"],"The spark plug creates the electrical spark that starts combustion in a gasoline engine cylinder."],
+        ["Which hand tool is made to turn screws with a cross-shaped recess?","Phillips screwdriver",["Flat file","Adjustable wrench","Cold chisel"],"A Phillips screwdriver has a cross-shaped tip that fits a Phillips screw recess."],
+        ["The radiator is part of which vehicle system?","Cooling system",["Braking system","Steering system","Exhaust system"],"The radiator transfers heat from engine coolant to the surrounding air."],
+        ["Before working under a raised vehicle, what should support it?","Rated jack stands",["The jack alone","Wood scraps","A spare tire"],"A jack lifts the vehicle; properly placed, rated jack stands provide safer support while work is performed."],
+        ["Brake fluid transmits pedal force in what kind of system?","Hydraulic system",["Optical system","Vacuum-only system","Belt drive"],"Brake fluid carries hydraulic pressure from the master cylinder to the wheel brakes."],
+        ["A clogged air filter most directly restricts what?","Airflow into the engine",["Coolant flow","Brake pressure","Battery voltage"],"The engine air filter cleans incoming air; when clogged, it restricts that airflow."],
+        ["What measuring tool can accurately check a small outside diameter?","Micrometer",["Level","Plumb bob","Pipe wrench"],"An outside micrometer measures small thicknesses or diameters precisely."]
+      ];
+
+      function arithmetic(i){
+        var type=i%5, a=8+(i%17), b=2+(i%7), q,ans,ex,opts;
+        if(type===0){var pct=10+5*(i%7), base=40+10*(i%13);ans=base*pct/100;q="What is "+pct+"% of "+base+"?";ex=pct+"% = "+(pct/100)+". Multiply "+base+" × "+(pct/100)+" = "+ans+".";opts=[ans,ans+5,Math.max(1,ans-5),base+ pct];}
+        else if(type===1){var rate=3+(i%8), hours=2+(i%6);ans=rate*hours;q="A vehicle travels "+rate+" miles each minute for "+hours+" minutes. How far does it travel?";ex="Distance = rate × time. "+rate+" × "+hours+" = "+ans+" miles.";opts=[ans,rate+hours,ans+rate,Math.max(1,ans-hours)];}
+        else if(type===2){var price=12+(i%24), discount=10+5*(i%5);ans=price*(1-discount/100);q="An item costs "+money(price)+" and is discounted "+discount+"%. What is the sale price?";ex="The discount is "+money(price*discount/100)+". Subtract it from "+money(price)+" to get "+money(ans)+".";opts=[money(ans),money(price-price/discount),money(price+discount),money(price*discount/100)];}
+        else if(type===3){var total=a*b;q=a+" boxes hold "+total+" parts equally. How many parts are in each box?";ans=b;ex="Divide the total by the number of boxes: "+total+" ÷ "+a+" = "+b+".";opts=[ans,a,total,Math.max(1,b-1)];}
+        else {var x=2+(i%9), ratio=2+(i%4), count=x*ratio;q="The ratio of red markers to blue markers is 1:"+ratio+". If there are "+x+" red markers, how many blue markers are there?";ans=count;ex="Each red marker corresponds to "+ratio+" blue markers, so "+x+" × "+ratio+" = "+count+".";opts=[ans,x+ratio,x,ratio];}
+        return shuffle({question:q,options:opts.map(String),correct:0,explanation:ex},i+101);
+      }
+      function math(i){
+        var type=i%5,q,ans,ex,opts,x=2+(i%13),y=3+(i%11);
+        if(type===0){var sum=x+y;q="Solve for x: x + "+y+" = "+sum;ans=x;ex="Subtract "+y+" from both sides: x = "+sum+" − "+y+" = "+x+".";opts=[x,x+y,y,Math.max(0,x-1)];}
+        else if(type===1){q="What is the area of a rectangle "+x+" units long and "+y+" units wide?";ans=x*y;ex="Rectangle area = length × width. "+x+" × "+y+" = "+ans+" square units.";opts=[ans,2*(x+y),x+y,Math.abs(x-y)];}
+        else if(type===2){q="Simplify: "+x+"² + "+y;ans=x*x+y;ex=x+"² means "+x+" × "+x+" = "+x*x+". Then add "+y+" to get "+ans+".";opts=[ans,2*x+y,x*x*y,x+y];}
+        else if(type===3){var den=2+(i%8),num=1+(i%(den-1));q="Convert "+num+"/"+den+" to a decimal.";ans=(num/den).toFixed(3).replace(/0+$/,'').replace(/\.$/,'');ex="Divide the numerator by the denominator: "+num+" ÷ "+den+" = "+ans+".";opts=[ans,(den/num).toFixed(2),"0."+num+den,(num+den)/10];}
+        else {var side=3+(i%15);q="A square has a side length of "+side+". What is its perimeter?";ans=4*side;ex="A square has four equal sides, so perimeter = 4 × "+side+" = "+ans+".";opts=[ans,side*side,2*side,side+4];}
+        return shuffle({question:q,options:opts.map(String),correct:0,explanation:ex},i+211);
+      }
+      function word(i){var v=vocab[i%vocab.length];var opts=[v[1]].concat(v[2]);return shuffle({question:'“'+v[0]+'” most nearly means:',options:opts,correct:0,explanation:'“'+v[0]+'” means “'+v[1]+'.” The other choices do not match its meaning.'},i+307)}
+      function paragraph(i){
+        var n=3+(i%12),mins=2+(i%5),subjects=["a maintenance team","a study group","a warehouse crew","a park staff"],s=subjects[i%subjects.length];
+        var passages=[
+          "A "+s+" checks its equipment before each shift. The inspection takes about "+mins+" minutes, but it helps the team find worn parts before they fail. As a result, the team has fewer delays during work.",
+          "During a week of training, a student reviewed notes for "+n+" short sessions instead of one long session. The student also tested recall without looking at the notes. By Friday, the material was easier to remember.",
+          "A town replaced several old streetlights with efficient lamps. The new lamps use less electricity and last longer, though their purchase price was higher. Over time, lower energy and replacement costs offset the initial expense."
+        ];
+        var p=passages[i%3],q,opts,ex;
+        if(i%3===0){q=p+"\n\nWhat is the main idea?";opts=["Brief inspections can prevent work delays","Inspections make equipment wear faster","Every shift should be shorter","Worn parts never fail"];ex="The passage connects a short pre-shift inspection with finding problems early and avoiding delays.";}
+        else if(i%3===1){q=p+"\n\nWhich study method does the passage support?";opts=["Spaced review with active recall","One long reading session","Avoiding self-testing","Studying only on Friday"];ex="The student used several short sessions and practiced recalling information without notes—spaced review and active recall.";}
+        else {q=p+"\n\nWhy could the new lamps save money over time?";opts=["They use less energy and need replacement less often","They are brighter at any cost","The town bought fewer streets","Their purchase price was lower"];ex="The passage says lower electricity use and longer life offset the higher initial purchase price.";}
+        return shuffle({question:q,options:opts,correct:0,explanation:ex},i+401);
+      }
+      function factQuestion(list,i,seed){var f=list[i%list.length];return shuffle({question:f[0],options:[f[1]].concat(f[2]),correct:0,explanation:f[3]},i+seed)}
+      function assembling(i){
+        var turns=[90,180,270],t=turns[i%3],q,ans,opts,ex;
+        if(i%2===0){q="An arrow points up. It is rotated "+t+"° clockwise. Which direction does it point?";ans=t===90?"Right":t===180?"Down":"Left";opts=[ans,"Up",ans==="Right"?"Left":"Right",ans==="Down"?"Left":"Down"];ex="Track the arrow through quarter-turns clockwise. A "+t+"° rotation equals "+(t/90)+" quarter-turn"+(t===90?"":"s")+", so it points "+ans.toLowerCase()+".";}
+        else {var side=2+(i%4);q="A cube net has four squares in a straight row, with one square attached above and one below the second square. When folded, how many faces will the cube have?";ans="6";opts=["6","4","5","8"];ex="A cube always has six square faces. This common net contains six squares that fold without overlap to form those six faces.";}
+        return shuffle({question:q,options:opts,correct:0,explanation:ex},i+809);
+      }
+      var makers=[arithmetic,math,word,paragraph,function(i){return factQuestion(science,i,503)},function(i){return factQuestion(electronics,i,601)},function(i){return factQuestion(mechanical,i,701)},function(i){return factQuestion(auto,i,751)},assembling];
+
+      var quiz=[],current=0,score=0,review=[],answered=false,run=0,totalQuestions=10;
+      var welcome=document.getElementById("welcome"),questionView=document.getElementById("questionView"),results=document.getElementById("results");
+      var qText=document.getElementById("questionText"),answers=document.getElementById("answers"),feedback=document.getElementById("feedback");
+      var next=document.getElementById("nextQuestion"),counter=document.getElementById("quizCounter"),progress=document.getElementById("progressFill");
+      function buildQuiz(){
+        quiz=[];totalQuestions=parseInt(document.getElementById("lengthSelect").value,10);var chosen=subjectSelect.value;
+        for(var j=0;j<totalQuestions;j++){var ci=chosen==="mixed"?(j+run*3)%9:parseInt(chosen,10);var qi=(j*29+run*17+ci*11)%270;var item=makers[ci](qi);item.category=categories[ci][0];quiz.push(item);}run++;
+      }
+      function start(){buildQuiz();current=0;score=0;review=[];welcome.hidden=true;results.hidden=true;questionView.hidden=false;render();document.getElementById("practice").scrollIntoView({behavior:"smooth",block:"start"});}
+      function render(){
+        answered=false;var item=quiz[current];feedback.className="feedback";feedback.innerHTML="";next.hidden=true;answers.innerHTML="";
+        counter.textContent="Question "+(current+1)+" of "+totalQuestions;progress.style.width=((current/totalQuestions)*100)+"%";document.getElementById("questionCategory").textContent=item.category;
+        document.getElementById("scoreText").textContent="Score: "+score;qText.textContent=item.question;
+        item.options.forEach(function(opt,i){var b=document.createElement("button");b.className="answer";b.innerHTML='<span class="letter">'+String.fromCharCode(65+i)+'</span><span>'+opt+'</span>';b.addEventListener("click",function(){choose(i)});answers.appendChild(b)});
+      }
+      function choose(i){
+        if(answered)return;answered=true;var item=quiz[current],correct=i===item.correct,buttons=answers.querySelectorAll("button");
+        buttons.forEach(function(b,n){b.disabled=true;if(n===item.correct)b.classList.add("correct");if(n===i&&!correct)b.classList.add("wrong")});
+        if(correct)score++;review.push({category:item.category,correct:correct,answer:item.options[item.correct]});document.getElementById("scoreText").textContent="Score: "+score;
+        feedback.className="feedback show "+(correct?"good":"bad");feedback.innerHTML="<strong>"+(correct?"Correct.":"Not quite. Correct answer: "+item.options[item.correct])+"</strong><p>"+item.explanation+"</p>";
+        next.hidden=false;next.textContent=current===totalQuestions-1?"See my score":"Next question";next.focus();
+      }
+      function finish(){
+        questionView.hidden=true;results.hidden=false;counter.textContent="Practice complete";progress.style.width="100%";
+        document.getElementById("finalScore").textContent=score+"/"+totalQuestions;document.getElementById("scoreRing").style.setProperty("--score",((score/totalQuestions)*100)+"%");
+        var percentage=score/totalQuestions,subjectName=subjectSelect.value==="mixed"?"mixed-subject":categories[parseInt(subjectSelect.value,10)][0];
+        document.getElementById("resultTitle").textContent=percentage>=.8?"Strong work.":percentage>=.5?"Good start.":"Keep building.";
+        document.getElementById("resultCopy").textContent=percentage>=.8?"You handled this "+subjectName+" set well. Review the explanations and keep sharpening your skills.":"Use the review below to spot what is worth practicing next in "+subjectName+".";
+        var list=document.getElementById("reviewList");list.innerHTML="";review.forEach(function(r,n){var d=document.createElement("div");d.className="review-item";d.innerHTML=(r.correct?"<strong>Correct</strong>":"<strong style='color:var(--bad)'>Review</strong>")+" · "+r.category+" — Answer: "+r.answer;list.appendChild(d)});
+      }
+      next.addEventListener("click",function(){if(current<totalQuestions-1){current++;render()}else finish()});
+      document.getElementById("startQuiz").addEventListener("click",start);document.getElementById("heroStart").addEventListener("click",start);document.getElementById("bottomStart").addEventListener("click",start);document.getElementById("retryQuiz").addEventListener("click",start);
+    })();
+  </script>
+</body>
+</html>
